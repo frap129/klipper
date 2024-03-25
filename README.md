@@ -1,18 +1,40 @@
-Welcome to the Klipper project!
+<p align="center"><img src="https://github.com/QIDITECH/QIDI_MAX3/blob/main/other/QIDI.png" height="240" alt="QIDI's logo" /></p>
+<p align="center"><a href="LICENSE"><img alt="GPL-V3.0 License" src="https://github.com/QIDITECH/QIDI_MAX3/blob/main/other/qidi.svg"></a></p>
 
-[![Klipper](docs/img/klipper-logo-small.png)](https://www.klipper3d.org/)
+# Document Instructions
+The 3D printers of QIDI are based on Klipper.Based on the Klipper open source project, we have made some modifications to its source code to meet some of the user's needs.At the same time, we have also made modifications to Moonraker, so that the screens we set can correspond to the operations on the page.
+Thanks to the developers and maintainers of these open source projects.Please consider using or supporting these powerful projects.
+- <a href="https://github.com/Klipper3d/klipper">**Klipper**</a>
+- <a href="https://github.com/Arksine/moonraker">**Moonraker**</a>
 
-https://www.klipper3d.org/
+1. This document provides the modified klipper version of QIDI.
+2. This document only provides methods for replacing source code for updates.
+***Please note that manual updates may affect normal after-sales service.***  
 
-Klipper is a 3d-Printer firmware. It combines the power of a general
-purpose computer with one or more micro-controllers. See the
-[features document](https://www.klipper3d.org/Features.html) for more
-information on why you should use Klipper.
+## Detailed update process
+1. Connect your printer device through SSH.
+2. Confirm which software you need to replace.Download the corresponding file and replace the software through SSH connection.The following are the paths of each software within the system.
 
-To begin using Klipper start by
-[installing](https://www.klipper3d.org/Installation.html) it.
+  Software|Directory
+  ---|---
+  klipper|/home/mks/
+  moonraker|/home/mks/
 
-Klipper is Free Software. See the [license](COPYING) or read the
-[documentation](https://www.klipper3d.org/Overview.html). We depend on
-the generous support from our
-[sponsors](https://www.klipper3d.org/Sponsors.html).
+3. If there is no need to update xindi, simply replace it. For example, if I replace the klipper folder, save it and restart it.
+
+## Report Issues and Make Suggestions
+You can contact [After-Sales Service](https://qidi3d.com/pages/warranty-policy-after-sales-support) to report issues and make suggestions.
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
