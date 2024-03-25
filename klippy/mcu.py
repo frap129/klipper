@@ -961,6 +961,9 @@ class MCU:
         last_stats = {k:(float(v) if '.' in v else int(v)) for k, v in parts}
         self._get_status_info['last_stats'] = last_stats
         return False, '%s: %s' % (self._name, stats)
+    def microcontroller_close_port(self):
+        logging.info("Self define cmd: close Port ")
+        self._disconnect()
 
 Common_MCU_errors = {
     ("Timer too close",): """
