@@ -111,6 +111,8 @@ class GCodeDispatch:
             func = getattr(self, 'cmd_' + cmd)
             desc = getattr(self, 'cmd_' + cmd + '_help', None)
             self.register_command(cmd, func, True, desc)
+        # Gcode macro interupt
+        self.break_flag=False
     def is_traditional_gcode(self, cmd):
         # A "traditional" g-code command is a letter and followed by a number
         try:
@@ -138,6 +140,13 @@ class GCodeDispatch:
             self.base_gcode_handlers[cmd] = func
         if desc is not None:
             self.gcode_help[cmd] = desc
+    def remove_command(self, cmd):
+        if cmd in self.ready_gcode_handlers:
+            del self.ready_gcode_handlers[cmd]
+            if cmd in self.base_gcode_handlers:
+                del self.base_gcode_handlers[cmd]
+        else:
+            raise self.printer.config_error("Gcode command '%s' not registered" % cmd)
     def register_mux_command(self, cmd, key, value, func, desc=None):
         prev = self.mux_commands.get(cmd)
         if prev is None:
@@ -174,6 +183,15 @@ class GCodeDispatch:
     args_r = re.compile('([A-Z_]+|[A-Z*/])')
     def _process_commands(self, commands, need_ack=True):
         for line in commands:
+            # Gcode macro interupt
+            if self.break_flag:
+                if str(line) != "CANCEL_PRINT":
+                    # self.respond_raw("break line: " + str(line))
+                    break
+                else:
+                    self.break_flag=False
+                    self.printer.lookup_object("heaters").break_flag=False
+            # self.respond_raw("current line: "+ str(line))
             # Ignore comments and leading/trailing spaces
             line = origline = line.strip()
             cpos = line.find(';')
