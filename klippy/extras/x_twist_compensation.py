@@ -155,7 +155,6 @@ class XTwistCompensation:
         bed_mesh_pmgr.save_profile(raw_mesh_name)
 
     def _modify_probed_matrix_XY(self, bed_mesh, xz, yz):
-        
         probed_matrix = bed_mesh.get_probed_matrix()
         compensated_matrix = []
         row_count = len(probed_matrix) - 1
