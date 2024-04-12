@@ -96,6 +96,8 @@ class GCodeDispatch:
         printer.register_event_handler("klippy:shutdown", self._handle_shutdown)
         printer.register_event_handler("klippy:disconnect",
                                        self._handle_disconnect)
+        printer.register_event_handler("klippy:interrupt",
+                                       self._handle_interrupt)
         # Command handling
         self.is_printer_ready = False
         self.mutex = printer.get_reactor().mutex()
@@ -105,6 +107,7 @@ class GCodeDispatch:
         self.mux_commands = {}
         self.gcode_help = {}
         self.status_commands = {}
+        self.pending_interrupt = False
         # Register commands needed before config file is loaded
         handlers = ['M110', 'M112', 'M115',
                     'RESTART', 'FIRMWARE_RESTART', 'ECHO', 'STATUS', 'HELP']
@@ -183,10 +186,17 @@ class GCodeDispatch:
         self.gcode_handlers = self.ready_gcode_handlers
         self._build_status_commands()
         self._respond_state("Ready")
+    def _handle_interrupt(self):
+        self.pending_interrupt = True
+        self.respond_info("Interrupt")
     # Parse input into commands
     args_r = re.compile('([A-Z_]+|[A-Z*/])')
     def _process_commands(self, commands, need_ack=True):
         for line in commands:
+            # Handle pending interrupt
+            if self.pending_interrupt:
+                self.pending_interrupt = False
+                break
             # Ignore comments and leading/trailing spaces
             line = origline = line.strip()
             cpos = line.find(';')
