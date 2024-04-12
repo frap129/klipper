@@ -96,7 +96,8 @@ class GCodeDispatch:
         printer.register_event_handler("klippy:shutdown", self._handle_shutdown)
         printer.register_event_handler("klippy:disconnect",
                                        self._handle_disconnect)
-        printer.register_event_handler("klippy:interrupt",
+        printer.register_event_handler("gcode:inject", self._handle_inject)
+        printer.register_event_handler("gcode:interrupt",
                                        self._handle_interrupt)
         # Command handling
         self.is_printer_ready = False
@@ -107,6 +108,7 @@ class GCodeDispatch:
         self.mux_commands = {}
         self.gcode_help = {}
         self.status_commands = {}
+        self.inject_gcode = None
         self.pending_interrupt = False
         # Register commands needed before config file is loaded
         handlers = ['M110', 'M112', 'M115',
@@ -189,6 +191,8 @@ class GCodeDispatch:
     def _handle_interrupt(self):
         self.pending_interrupt = True
         self.respond_info("Interrupt")
+    def _handle_inject(self, script):
+        self.inject_gcode = script
     # Parse input into commands
     args_r = re.compile('([A-Z_]+|[A-Z*/])')
     def _process_commands(self, commands, need_ack=True):
@@ -197,6 +201,10 @@ class GCodeDispatch:
             if self.pending_interrupt:
                 self.pending_interrupt = False
                 break
+            # Handle gcode injection
+            if self.inject_gcode is not None:
+                self._process_commands(self.inject_gcode.split('\n'), need_ack=False)
+                self.inject_gcode = None
             # Ignore comments and leading/trailing spaces
             line = origline = line.strip()
             cpos = line.find(';')
@@ -237,6 +245,9 @@ class GCodeDispatch:
     def run_script(self, script):
         with self.mutex:
             self._process_commands(script.split('\n'), need_ack=False)
+    def run_script_with_interrupt(self, script):
+        self._handle_interrupt
+        self.run_script_from_command(script)
     def get_mutex(self):
         return self.mutex
     def create_gcode_command(self, command, commandline, params):
